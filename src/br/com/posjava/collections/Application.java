@@ -3,6 +3,7 @@ package br.com.posjava.collections;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -18,23 +19,23 @@ public class Application {
 
         // Exibe os elementos na ordem inversa de inserção,
         // sem modificar a lista original (somente a iteração é invertida)
-//        employees.reversed().forEach(System.out::println);
+        employees.reversed().forEach(System.out::println);
 
         // Filtra os funcionários que trabalham no departamento de Faturamento
-//        employees.stream()
-//                .filter(employee -> employee.department().equals("Faturamento"))
-//                .forEach(System.out::println);
+        employees.stream()
+                .filter(employee -> employee.department().equals("Faturamento"))
+                .forEach(System.out::println);
 
-//        final var total = employees.stream()
-//                .filter(employee -> employee.department().equals("Faturamento"))
-//                .count();
-//        System.out.println("Total de funcionários no departamento de Faturamento: " + total);
+        final var total = employees.stream()
+                .filter(employee -> employee.department().equals("Faturamento"))
+                .count();
+        System.out.println("Total de funcionários no departamento de Faturamento: " + total);
 
         // Filtra os funcionários que trabalham no departamento de Faturamento com salário maior que 3000
-//        employees.stream()
-//                .filter(employee -> employee.department().equals("Faturamento")
-//                        && employee.salary().compareTo(new BigDecimal(3000)) > 0)
-//                .forEach(System.out::println);
+        employees.stream()
+                .filter(employee -> employee.department().equals("Faturamento")
+                        && employee.salary().compareTo(new BigDecimal(3000)) > 0)
+                .forEach(System.out::println);
 
         // Soma o total de salários dos funcionários
         // Reduce é uma operação terminal que reduz os elementos da stream a um único valor
@@ -66,7 +67,8 @@ public class Application {
         System.out.println("Existe funcionário no departamento de Informática? " + containsEmployeeInformatica);
 
         // Cria uma nova lista somente com os funcionários do departamento de Contabilidade
-        final var employeeContabilidade = employees.stream().filter(employee -> employee.department().equals("Contabilidade"))
+        final var employeeContabilidade = employees.stream()
+                .filter(employee -> employee.department().equals("Contabilidade"))
                 .toList();
         employeeContabilidade.forEach(System.out::println);
 
@@ -79,10 +81,43 @@ public class Application {
         // Outra forma de criar lista usando Collectors.toList()
         final var justOneZeca = employees.stream()
                 .filter(employee -> employee.name().equals("Zeca"))
-                .distinct().collect(Collectors.toList());
+                .distinct().toList();
         justOneZeca.forEach(System.out::println);
 
-        // parei aos 31:04 do vídeo 1
+        // Outra forma de criar lista usando Collectors.toList(), mas limitando a 2 resultados
+        // retorna os 2 primeiros Zecas que encontrar
+        var justOneZeca2 = employees.stream()
+                .filter(employee -> employee.name().equals("Zeca"))
+                .limit(2)
+                .collect(Collectors.toList());
+        justOneZeca2.forEach(System.out::println);
+
+        // sort com stream retorna uma nova lista ordenada, sem modificar a lista original
+        // Vai mostrar os funcionários do mais novo para o mais velho
+        var emp1 = employees.stream().sorted(Comparator.comparing(Employee::birthDate))
+                .toList();
+        emp1.forEach(System.out::println);
+
+        // sort alterando a lista original, vai mostrar os funcionários do mais velho para o mais novo
+        employees.sort(Comparator.comparing(Employee::birthDate).reversed());
+        employees.forEach(System.out::println);
+
+        // Usando peek para mostrar os funcionários enquanto faz o filtro
+        // reduce é o ultimo metodo a ser chamado e não permite mais operações depois dele - terminal operation
+        var salaries = employees.stream()
+                .filter(employee -> employee.department().equals("Contabilidade"))
+                .peek(System.out::println)
+                .map(employee -> employee.salary() == null ? BigDecimal.ZERO : employee.salary())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        System.out.println("Total de salários do departamento de Contabilidade: " + salaries);
+
+        // findAny retorna um elemento qualquer da lista, se existir
+        // findFirst retorna o primeiro elemento da lista, se existir
+        // por isso utilizado o isPresent para garantir que existe
+        // List funciona como uma fila, o primeiro a entrar é o primeiro a sair (FIFO - First In, First Out)
+        employees.stream().findAny().ifPresent(System.out::println);
+        employees.stream().findFirst().ifPresent(System.out::println);
+
     }
 
     private List<Employee> createEmployees() {
