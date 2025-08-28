@@ -2,3 +2,6 @@
 
 ## lambda
 é bom quando está trabalhando com poucos dados em memória, se você está trabalhando com mas de 2mil registros em memória, é melhor usar o for tradicional, porque ele é mais performático.
+
+
+outro repositório com mais exemplos [aqui - eu que fiz](https://github.com/deisesalless/data-hora-java/tree/main)
