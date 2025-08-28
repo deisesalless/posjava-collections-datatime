@@ -2,10 +2,11 @@ package br.com.posjava.datatime;
 
 import br.com.posjava.collections.Employee;
 
+import javax.xml.crypto.Data;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.*;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 public class Application {
     public Application() {
@@ -14,6 +15,46 @@ public class Application {
 
     public void test() {
         final var employees = createEmployees();
+
+        // Data completa no formato full
+        // [dia da semana, dia do mês, mês, ano, hora, minuto, segundo, fuso horário]
+        final var currentDate1 = new Date();
+        System.out.println("Data atual com Date: " + currentDate1);
+
+        // Data em formato enxuto yyyy-MM-dd
+        final var currentDate2 = LocalDate.now();
+        System.out.println("Data atual com LocalDate: " + currentDate2);
+
+        // Data completa com time zone
+        final var currentDate3 = ZonedDateTime.now();
+        System.out.println("Data atual com ZonedDateTime: " + currentDate3);
+
+        final var currentDate4 = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
+        System.out.println("Fuso horário do Brasil(" + currentDate4.getZone() + "): " + currentDate4.getOffset());
+
+        final var currentDate5 = ZonedDateTime.now(ZoneId.of("Europe/Madrid"));
+        System.out.println("Fuso horário da Espanha(" + currentDate5.getZone() + "): " + currentDate5.getOffset());
+
+        // Adicionando 4 dias na data atual
+        final var newDate1 = LocalDate.now().plusDays(4);
+        System.out.println("Data atual mais 4 dias: " + newDate1);
+
+        // Adicionando 4 dias na data atual e alterando o mês para abril e a hora para 00:05
+        final var newDate2 = LocalDate.now().plusDays(4).withMonth(4).atTime(0,5);
+        System.out.println("Data atual alterada: " + newDate2);
+
+        // Retorna uma data em formato full
+        final var specificDate = new GregorianCalendar(2021, Calendar.JANUARY, 25).getTime();
+        System.out.println("Data específica com GregorianCalendar: " + specificDate);
+
+        final var enumMonth = LocalDate.now().getMonth();
+        System.out.println("Mês atual em enum: " + enumMonth + " - " + enumMonth.getValue());
+
+        // Horario atual com horas e minutos - truncatedTo eu determino o delimitador, então ele mostra até o minuto
+        final var actualTime = LocalTime.now();
+        System.out.println("Hora atual: " + actualTime.truncatedTo(ChronoUnit.MINUTES));
+
+        // parei em 20 minutos
     }
 
     private List<Employee> createEmployees() {
