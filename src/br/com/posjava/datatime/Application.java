@@ -4,7 +4,10 @@ import br.com.posjava.collections.Employee;
 
 import javax.xml.crypto.Data;
 import java.math.BigDecimal;
+import java.sql.SQLOutput;
+import java.text.SimpleDateFormat;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -54,7 +57,61 @@ public class Application {
         final var actualTime = LocalTime.now();
         System.out.println("Hora atual: " + actualTime.truncatedTo(ChronoUnit.MINUTES));
 
-        // parei em 20 minutos
+        // Combinando data e hora
+        final var combinedDateTime = LocalDateTime.of(currentDate2, actualTime);
+        System.out.println("Data e hora combinadas: " + combinedDateTime);
+
+        // Descobrir a diferença entre duas datas em dias
+        final var pastDate = LocalDate.of(1995, 8, 31);
+        final var daysBetween = ChronoUnit.DAYS.between(pastDate, LocalDate.now());
+        System.out.println("Se passaram " + daysBetween + " dias desde " + pastDate);
+
+        // Descobrir a diferença entre duas datas em anos
+        final var yearsBetween = ChronoUnit.YEARS.between(pastDate, LocalDate.now());
+        System.out.println("Se passaram " + yearsBetween + " anos desde " + pastDate);
+
+        // Descobrir a diferença entre duas datas em meses
+        final var monthsBetween = ChronoUnit.MONTHS.between(pastDate, LocalDate.now());
+        System.out.println("Se passaram " + monthsBetween + " meses desde " + pastDate);
+
+        // Descobrir a diferença entre duas datas anos, meses e dias
+        final var periodBetween = Period.between(pastDate, LocalDate.now());
+        System.out.println("Se passaram " + periodBetween.getYears() + " anos, " + periodBetween.getMonths() +
+                " meses e " + periodBetween.getDays() + " dias desde " + pastDate);
+
+        // Usando a API antiga
+        final var calendar = Calendar.getInstance();
+        calendar.add(Calendar.HOUR, 10); // Adiciona 10 horas na data atual
+        System.out.println("Data atual mais 10 horas com Calendar: " + calendar.getTime());
+
+        // Usando a API nova + truncatedTo para limitar a exibição até os segundos
+        final var future = LocalDateTime.now().plusHours(10);
+        System.out.println("Data atual mais 10 horas com LocalDateTime: " + future.truncatedTo(ChronoUnit.SECONDS));
+
+        // Disponivel desde o Java 1 - API antiga - não é thread safe
+        final var formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        final var formattedDate = formatter.format(new Date());
+        System.out.println("Data formatada com SimpleDateFormat: " + formattedDate);
+
+        // Disponivel desde o Java 8 - API moderna - thread safe
+        final var formatter2 =  DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        String formattedDate2 = formatter2.format(LocalDateTime.now());
+        System.out.println("Data formatada com DateTimeFormatter: " + formattedDate2);
+
+        // Convertendo String para LocalDate
+        // Precisa passar como argumento a data em String e o formatador utilizado
+        LocalDateTime localDateTime = LocalDateTime.parse(formattedDate2, formatter2);
+        System.out.println("String convertida para LocalDateTime: " + localDateTime);
+
+        final var nowTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss"));
+        System.out.println("Hora atual formatada: " + nowTime);
+
+        // Instant - representa um instante na linha do tempo (data e hora) com precisão de nanossegundos
+        // Muito seguro quando preciso utilizar em Time Zones ou aplicações muito robustas
+        // No banco é gravado como Long, então é mais leve para guardar
+        // Porém para consumir é necessário converter para LocalDateTime principalmente se for exibir para o usuário
+        final var instant = Instant.now();
+        System.out.println("Instante atual: " + instant);
     }
 
     private List<Employee> createEmployees() {
